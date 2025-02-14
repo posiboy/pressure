@@ -228,34 +228,34 @@ const Dashboard = () => {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 3</p>
+                  <p className='ml-2'>Valve 7</p>
                 </div>
 
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 4</p>
+                  <p className='ml-2'>Valve 8</p>
                 </div> 
               </div> 
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 1</p>
+                  <p className='ml-2'>Valve 9</p>
                 </div>
 
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 2</p>
+                  <p className='ml-2'>Valve 10</p>
                 </div> 
               </div>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 3</p>
+                  <p className='ml-2'>Valve 11</p>
                 </div>
 
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 4</p>
+                  <p className='ml-2'>Valve 12</p>
                 </div> 
               </div> 
           </Stack>
