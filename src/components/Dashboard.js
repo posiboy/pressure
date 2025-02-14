@@ -128,7 +128,7 @@ const Dashboard = () => {
         </div>
 
         <div className='bg-slate-700 p-2 rounded-md text-white -[#171717] text-lg w -full min-w-[250px] my-2'>
-          <p className='font-semibold'>Enable Flow</p>
+          <p className='font-semibold'>Control Valves</p>
           <div className='mt-4 mb-8 slate-300space-nowrap '>
 
           <Stack spacing={[1, 5]} direction={['column', 'column']}>
@@ -168,34 +168,34 @@ const Dashboard = () => {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 3</p>
+                  <p className='ml-2'>Valve 7</p>
                 </div>
 
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 4</p>
+                  <p className='ml-2'>Valve 8</p>
                 </div> 
               </div> 
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 1</p>
+                  <p className='ml-2'>Valve 9</p>
                 </div>
 
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 2</p>
+                  <p className='ml-2'>Valve 10</p>
                 </div> 
               </div>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 3</p>
+                  <p className='ml-2'>Valve 11</p>
                 </div>
 
                 <div className='flex items-center'>
                   <Switch size='sm' defaultChecked />
-                  <p className='ml-2'>Valve 4</p>
+                  <p className='ml-2'>Valve 12</p>
                 </div> 
               </div> 
           </Stack>
