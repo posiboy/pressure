@@ -14,8 +14,12 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+    color: #2563eb;
   color: #6366f1;
-  color: #2563eb;
+  color: #5749d0;
   color: #3B3199;
+  color: #261e70;
   color: #171717;
+  color: #F1F3F43D;
+  color: #fdfdfd;
 }
