@@ -1,6 +1,6 @@
 import React from 'react'
 import { ChakraProvider } from '@chakra-ui/react'
-import { Dashboard } from './components'
+import { Dashboard, Header } from './components'
 
 const App = () => {
   return (
@@ -14,6 +14,7 @@ const App = () => {
         }}
       
         className="bg-[#171717] text-white h-full min-h-screen overflow-hidden"> 
+        <Header />
         <Dashboard/>
       </div>
     </ChakraProvider>
