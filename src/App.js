@@ -1,6 +1,7 @@
 import React from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from '@chakra-ui/react'
-import { Dashboard, Header } from './components'
+import { Authenticate, Dashboard, Header } from './components'
 import useOnlineStatus from './utils/useOnlineStatus';
 import { RiWifiOffLine } from 'react-icons/ri';
 
@@ -20,7 +21,7 @@ const App = () => {
         className="bg-[#171717] text-white h-full min-h-screen overflow -hidden relative"> 
         {/* Offline check */}
         {!isOnline &&
-          <div className="absolute w-full h-full flex items-center justify-center bg-slate-500 z-50 bg-gray-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10">
+          <div className="absolute w-full h-full flex items-center justify-center z-50 bg-gray-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10">
             <div className="bg-[#333333] rounded-md p-5 flex flex-col items-center justify-center">
               <div>
                 <RiWifiOffLine className='text-7xl' />
@@ -30,9 +31,29 @@ const App = () => {
             </div>
           </div>
         }
+        <BrowserRouter>
+          <Routes>
+            <Route 
+              path="*" 
+              element={
+                <>
+                  <Header />
+                  <Authenticate />
+                </>
+              } 
+            />
+            <Route 
+              path="/dashboard" 
+              element={
+                <>
+                  <Header />
+                  <Dashboard />
+                </>
+              } 
+            />
+          </Routes>
+        </BrowserRouter>
       
-        <Header />
-        <Dashboard/>
       </div>
     </ChakraProvider>
     
