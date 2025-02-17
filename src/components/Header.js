@@ -11,7 +11,9 @@ const Header = () => {
                 boxSize='50px' 
                 className='rounded-xl'
                 alt='Bowen University' 
-                src='https://www.adexen.com/upload/company-logos/adexen-logo-bowen-university-logo.jpg' />
+                // src='https://www.adexen.com/upload/company-logos/adexen-logo-bowen-university-logo.jpg' 
+                src='bowen-logo.jpg' 
+                />
             </Tooltip>
           </div>
           <Tooltip label="Heating, Dispensing and Monitoring System">
