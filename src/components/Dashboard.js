@@ -90,7 +90,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [loading3, setLoading3] = useState(false);
-  const [valves, setValves] = useState(Array(12).fill(false));
+  // const [valves, setValves] = useState(Array(12).fill(false)); // With Cold Water Dispensing
+  const [valves, setValves] = useState(Array(10).fill(false)); // Without Cold Water Dispensing and Double Panel Valves
   const [t_temp, setT_Temp] = useState(infos?.target_temperature ?? 0);
 
   // Ref to track if `valves` has been initialized
@@ -98,9 +99,12 @@ const Dashboard = () => {
 
   // Define valve mappings for each system
   const systemValves = {
-    '90deg': [0, 1, 2], // Valves 1, 2, 3 (indices 0, 1, 2)
-    '135deg': [0, 3, 4], // Valves 1, 4, 5 (indices 0, 3, 4)
-    '180deg': [0, 5, 6], // Valves 1, 6, 7 (indices 0, 5, 6)
+    '90deg': [0, 1, 2, 7], // Valves 1, 2, 3, 8 (indices 0, 1, 2, 7)
+    '135deg': [0, 3, 4, 7], // Valves 1, 4, 5, 8 (indices 0, 3, 4, 7)
+    '180deg': [0, 5, 6, 7], // Valves 1, 6, 7, 8 (indices 0, 5, 6, 7)
+    'panelSprinkler': [8], // Valve 9 (indices 8)
+    // 'coldWater': [9], // Valve 10 (indices 9)
+    // 'pumps': [11], // Valves 11, 12 (indices 10, 11)
   };
 
   // Memoize the `updateFDB` function using `useCallback`
@@ -297,7 +301,18 @@ const Dashboard = () => {
                     _hover={{ bg: '#2563eb'}} 
                     size="sm" 
                     className='uppercase'
-                    onClick={() => updateFDB("pump", !infos?.pump)}          
+                    onClick={() => {
+                      updateFDB("pump", !infos?.pump)
+
+                      const newValves = [...valves];
+                      newValves[9] = !valves[9];
+                      setValves(newValves);
+
+                      setTimeout(() => {
+                        updateFDB("valves", newValves)
+                      }, 1000);
+
+                    }}          
                   >{infos?.pump ? "OFF PUMP" : "ON PUMP"}</Button>
                 </PopoverFooter>
               }
@@ -464,6 +479,36 @@ const Dashboard = () => {
                 />
                 <p className='ml-3'>180 Deg System</p>
               </div>
+        
+              {/* Panel Sprinkler */}
+              <div className='flex items-center'>
+                <Switch
+                  size='sm'
+                  isChecked={isSystemActive('panelSprinkler')} // Reflects the state of valves 1, 6, 7
+                  onChange={(e) => handleSystemToggle('panelSprinkler', e.target.checked)}
+                />
+                <p className='ml-3'>Panel Sprinkler</p>
+              </div>
+
+              {/* Cold Water */}
+              {/* <div className='flex items-center'>
+                <Switch
+                  size='sm'
+                  isChecked={isSystemActive('coldWater')} // Reflects the state of valve 9
+                  onChange={(e) => handleSystemToggle('coldWater', e.target.checked)}
+                />
+                <p className='ml-3'>Cold Water</p>
+              </div> */}
+
+              {/* Pumps */}
+              {/* <div className='flex items-center'>
+                <Switch
+                  size='sm'
+                  isChecked={isSystemActive('180deg')} // Reflects the state of valves 1, 6, 7
+                  onChange={(e) => handleSystemToggle('180deg', e.target.checked)}
+                />
+                <p className='ml-3'>Pumps</p>
+              </div> */}
             </Stack>
             </div>
 
@@ -525,8 +570,10 @@ const Dashboard = () => {
                 className={`flex items-center justify-center rounded-md cursor-pointer px-3 py-1 bg-red-600 hover:bg-red-800 ease text-white ${!infos?.valves && "hidden"}`}
                 onClick={() => {
                   setLoading2(true)
-                  updateFDB("valves", Array(12).fill(false))
-                  setValves(Array(12).fill(false))
+                  // updateFDB("valves", Array(12).fill(false))
+                  // setValves(Array(12).fill(false))
+                  updateFDB("valves", Array(10).fill(false))
+                  setValves(Array(10).fill(false))
                   setTimeout(() => {
                     setLoading2(false)
                   }, 500);
