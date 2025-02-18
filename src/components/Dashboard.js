@@ -88,6 +88,7 @@ const Dashboard = () => {
   const user = localStorage.getItem("user");
   const navigate = useNavigate();
   const toast = useToast();
+  const toastIdRef = React.useRef();
 
   const [infos, setInfos] = useState({});
   const [loading, setLoading] = useState(false);
@@ -109,25 +110,63 @@ const Dashboard = () => {
   };
 
   // Memoize the `updateFDB` function using `useCallback`
+  // const updateFDB = useCallback((location, val) => {
+  //   if (infos?.[location] !== val) {
+  //     set(ref(db, 'db/' + location), val).then(() => {
+  //       console.log("Success");
+  //       toast.closeAll()
+  //       toast({
+  //         title: "Success",
+  //         status: "success",
+  //         isClosable: true,
+  //         position: 'top-right',
+  //       });
+  //     }).catch((error) => {
+  //       console.log(JSON.stringify(error, null, 2));
+  //       toast({
+  //         title: "Error - Check Console",
+  //         status: "error",
+  //         isClosable: true,
+  //         position: 'top-right',
+  //       });
+  //     });
+  //   }
+  // }, [infos, toast]);
+
+  // Memoize the `updateFDB` function using `useCallback`
   const updateFDB = useCallback((location, val) => {
     if (infos?.[location] !== val) {
-      set(ref(db, 'db/' + location), val).then(() => {
-        console.log("Success");
-        toast({
-          title: "Success",
-          status: "success",
-          isClosable: true,
-          position: 'top-right',
+      set(ref(db, 'db/' + location), val)
+        .then(() => {
+          console.log("Success");
+
+          // Close all existing toasts
+          toast.closeAll();
+
+          // Show success toast
+          toastIdRef.current = toast({
+            title: "Success",
+            description: `Updated ${location} to ${val}`,
+            status: "success",
+            isClosable: true,
+            position: "top-right",
+          });
+        })
+        .catch((error) => {
+          console.error("Firebase Error:", JSON.stringify(error, null, 2));
+
+          // Close all existing toasts
+          toast.closeAll();
+
+          // Show error toast
+          toastIdRef.current = toast({
+            title: "Error",
+            description: "Check console for details",
+            status: "error",
+            isClosable: true,
+            position: "top-right",
+          });
         });
-      }).catch((error) => {
-        console.log(JSON.stringify(error, null, 2));
-        toast({
-          title: "Error - Check Console",
-          status: "error",
-          isClosable: true,
-          position: 'top-right',
-        });
-      });
     }
   }, [infos, toast]);
 
@@ -151,8 +190,20 @@ const Dashboard = () => {
         if (data?.temperature >= data?.target_temperature) {
           updateFDB("heater", false);
         }
+        
         if (infos?.water_level?.[1]) {
           updateFDB("pump", false);
+        } 
+        // New Pumping logic
+        else if (!infos?.water_level?.[0]) {
+          updateFDB("pump", true); // Turn on Pump
+
+          const pumpTimeout = setTimeout(() => {
+            updateFDB("pump", false); // Turn off after 90s
+          }, [90000])
+
+          // Cleanup timeout on unmount or if Firebase data changes
+          return () => clearTimeout(pumpTimeout);
         } 
       }
     });
@@ -222,7 +273,7 @@ const Dashboard = () => {
                           <p>
                             {
                               infos?.water_level?.[1] ? "Full" : 
-                              infos?.water_level?.[0] ? "Medium" : 
+                              infos?.water_level?.[0] ? "OK" : 
                               "Low"
                             }                            
                           </p>
@@ -242,7 +293,7 @@ const Dashboard = () => {
                     <div className='py- 3'>
                       <p>Tank Water level is {
                               infos?.water_level?.[1] ? "Full" : 
-                              infos?.water_level?.[0] ? "Medium" : 
+                              infos?.water_level?.[0] ? "OK" : 
                               "Low"
                             }
                       </p>
