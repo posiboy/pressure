@@ -9,10 +9,12 @@ const Header = () => {
             <Tooltip label="Bowen University | Excellence and Godliness">
               <Image
                 boxSize='50px' 
-                className='rounded-xl'
+                // className='rounded-xl'
+                className='rounded-full'
                 alt='Bowen University' 
                 // src='https://www.adexen.com/upload/company-logos/adexen-logo-bowen-university-logo.jpg' 
-                src='bowen-logo.jpg' 
+                // src='bowen-logo.jpg' 
+                src='baes-logo.jpg' 
                 />
             </Tooltip>
           </div>

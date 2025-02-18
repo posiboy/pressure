@@ -90,24 +90,22 @@ const Dashboard = () => {
   const toast = useToast();
 
   const [infos, setInfos] = useState({});
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const [loading3, setLoading3] = useState(false);
+  const [pump_2, setPump_2] = useState(false);
   // const [valves, setValves] = useState(Array(12).fill(false)); // With Cold Water Dispensing
-  const [valves, setValves] = useState(Array(10).fill(false)); // Without Cold Water Dispensing and Double Panel Valves
+  // const [valves, setValves] = useState(Array(10).fill(false)); // Without Cold Water Dispensing and Double Panel Valves
+  const [valves, setValves] = useState(Array(7).fill(false)); // Without Cold Water Dispensing, Double Panel Valves and Panel Sprinkler
   const [t_temp, setT_Temp] = useState(infos?.target_temperature ?? 0);
 
   // Ref to track if `valves` has been initialized
   const hasInitializedValves = useRef(false);
 
   // Define valve mappings for each system
-  const systemValves = {
-    '90deg': [0, 1, 2, 7], // Valves 1, 2, 3, 8 (indices 0, 1, 2, 7)
-    '135deg': [0, 3, 4, 7], // Valves 1, 4, 5, 8 (indices 0, 3, 4, 7)
-    '180deg': [0, 5, 6, 7], // Valves 1, 6, 7, 8 (indices 0, 5, 6, 7)
-    'panelSprinkler': [8], // Valve 9 (indices 8)
-    // 'coldWater': [9], // Valve 10 (indices 9)
-    // 'pumps': [11], // Valves 11, 12 (indices 10, 11)
+  const systemValves = { 
+    '90deg': [0, 1, 2], // Valves 1, 2, 3, 8 (indices 0, 1, 2)
+    '135deg': [0, 3, 4], // Valves 1, 4, 5, 8 (indices 0, 3, 4)
+    '180deg': [0, 5, 6], // Valves 1, 6, 7 (indices 0, 5, 6) 
   };
 
   // Memoize the `updateFDB` function using `useCallback`
@@ -153,9 +151,9 @@ const Dashboard = () => {
         if (data?.temperature >= data?.target_temperature) {
           updateFDB("heater", false);
         }
-        if (data?.water_level >= 90) {
+        if (infos?.water_level?.[1]) {
           updateFDB("pump", false);
-        }
+        } 
       }
     });
 
@@ -222,7 +220,11 @@ const Dashboard = () => {
                             </div>
                           }
                           <p>
-                            {infos?.water_level ?? "0"}%
+                            {
+                              infos?.water_level?.[1] ? "Full" : 
+                              infos?.water_level?.[0] ? "Medium" : 
+                              "Low"
+                            }                            
                           </p>
                         </div>
                     </div>
@@ -238,10 +240,15 @@ const Dashboard = () => {
                   <PopoverCloseButton />
                   <PopoverBody className='w-max'>
                     <div className='py- 3'>
-                      <p>Tank Water level is {infos?.water_level >= 90 ? "FULL" : infos?.water_level > 49 ? "OK" : "LOW"}</p>
+                      <p>Tank Water level is {
+                              infos?.water_level?.[1] ? "Full" : 
+                              infos?.water_level?.[0] ? "Medium" : 
+                              "Low"
+                            }
+                      </p>
                     </div>
-                  </PopoverBody>
-                  {infos?.water_level < 90 && 
+                  </PopoverBody> 
+                  {!infos?.water_level?.[1] && 
                     <PopoverFooter>
                       <Button 
                         variant='solid' 
@@ -251,16 +258,7 @@ const Dashboard = () => {
                         size="sm" 
                         className='uppercase'
                         onClick={() => {
-                          updateFDB("pump", !infos?.pump)
-
-                          const newValves = [...valves];
-                          newValves[9] = !valves[9];
-                          setValves(newValves);
-
-                          setTimeout(() => {
-                            updateFDB("valves", newValves)
-                          }, 1000);
-
+                          updateFDB("pump", !infos?.pump) 
                         }}          
                       >{infos?.pump ? "OFF PUMP" : "ON PUMP"}</Button>
                     </PopoverFooter>
@@ -292,11 +290,14 @@ const Dashboard = () => {
                     <PopoverBody>
                       {/* {infos?.temperature >= infos?.target_temperature ? "Status" : "Confirmation"} */}
                       <p>Target Temperature: {infos?.target_temperature}°C</p>
+                      <p className='text-sm mt-1'>Max: 60°C</p>
+
                       {infos?.target_temperature >= 0 ?
                         <NumberInput 
                           className="my-3" 
                           defaultValue={infos?.target_temperature} 
                           min={0}
+                          max={60}
                           value={t_temp}
                           onChange={(val) => setT_Temp(val)}
                         >
@@ -379,25 +380,7 @@ const Dashboard = () => {
             <div className='bg-[#333333CC] slate-300 p-2 rounded-md text-slate-300 w-full'>
                 <p className='font-semibold text-lg'>Enable Flow</p>
                 <div className='mt-4 mb-8 slate-300space-nowrap '>
-
-                {/* <Stack spacing={[1, 5]} direction={['column', 'column']}>
-                    <div className='flex items-center'>
-                      <Switch 
-                        size='sm' 
-                        defaultChecked 
-                      />
-                      <p className='ml-3'>90 Deg System</p>
-                    </div>
-                    <div className='flex items-center'>
-                      <Switch size='sm' defaultChecked />
-                      <p className='ml-3'>135 Deg System</p>
-                    </div>
-                    <div className='flex items-center'>
-                      <Switch size='sm' defaultChecked />
-                      <p className='ml-3'>180 Deg System</p>
-                    </div> 
-                </Stack> */}
-
+                  
                 <Stack spacing={[1, 5]} direction={['column', 'column']}>
                   {/* 90 Deg System */}
                   <div className='flex items-center'>
@@ -430,14 +413,14 @@ const Dashboard = () => {
                   </div>
             
                   {/* Panel Sprinkler */}
-                  <div className='flex items-center'>
+                  {/* <div className='flex items-center'>
                     <Switch
                       size='sm'
                       isChecked={isSystemActive('panelSprinkler')} // Reflects the state of valves 1, 6, 7
                       onChange={(e) => handleSystemToggle('panelSprinkler', e.target.checked)}
                     />
                     <p className='ml-3'>Panel Sprinkler</p>
-                  </div>
+                  </div> */}
 
                   {/* Cold Water */}
                   {/* <div className='flex items-center'>
@@ -460,36 +443,7 @@ const Dashboard = () => {
                   </div> */}
                 </Stack>
                 </div>
-
-                {/* <div>
-                    <Button 
-                      variant='solid' 
-                      background='#3B3199' 
-                      color='white'
-                      _hover={{ bg: '#2563eb'}} 
-                      className='w-full'
-                      // Firebase database
-                      onClick={() => {
-                        setLoading(true)
-                        // updateFDB("valves", valves)
-                        setTimeout(() => {
-                          setLoading(false)
-                        }, 500);
-
-                      }}
-                    >
-                      {loading ? 
-                        <Spinner
-                          thickness='4px'
-                          speed='0.65s'
-                          emptyColor='gray.200'
-                          color='blue.500'
-                        />
-                      :
-                      <p>Save</p>
-                      }      
-                    </Button>
-                </div> */}
+ 
             </div>
           </div>
 
@@ -518,18 +472,16 @@ const Dashboard = () => {
                 <div  
                     className={`flex items-center justify-center rounded-md cursor-pointer px-3 py-1 bg-red-600 hover:bg-red-800 ease text-white ${!infos?.valves && "hidden"}`}
                     onClick={() => {
-                      setLoading2(true)
-                      // updateFDB("valves", Array(12).fill(false))
-                      // setValves(Array(12).fill(false))
-                      updateFDB("valves", Array(10).fill(false))
-                      setValves(Array(10).fill(false))
+                      setLoading(true) 
+                      updateFDB("valves", Array(7).fill(false))
+                      setValves(Array(7).fill(false))
                       setTimeout(() => {
-                        setLoading2(false)
+                        setLoading(false)
                       }, 500);
 
                     }}
                   >
-                    {loading2 ? 
+                    {loading ? 
                       <Spinner
                         thickness='4px'
                         speed='0.65s'
@@ -542,9 +494,7 @@ const Dashboard = () => {
                   </div>
               </div>
               <div className='mt-4 mb-8 slate-300space-nowrap '> 
-                <Stack spacing={[1, 5]} direction={['column', 'column']}>
-                  {JSON.stringify(valves)}
-                  {JSON.stringify(infos?.valves)}
+                <Stack spacing={[1, 5]} direction={['column', 'column']}> 
                   {[...Array(Math.ceil(valves.length / 2)).keys()].map((row) => (
                     <div 
                       key={row} 
@@ -557,15 +507,15 @@ const Dashboard = () => {
                             <div key={valveIndex} className='flex items-center'> 
                             {infos?.valves ?
                               <Switch
-                                size='sm'
-                                // defaultChecked={infos?.valves?.[valveIndex]}
-                                // isChecked={infos?.valves?.[valveIndex]}
-                                // defaultChecked={valves[valveIndex]}
+                                size='sm' 
                                 isChecked={valves[valveIndex]}
                                 onChange={(e) => {
                                   const newValves = [...valves];
                                   newValves[valveIndex] = e.target.checked;
                                   setValves(newValves);
+                                  if (valveIndex == 0) {
+                                    setPump_2(e.target.checked)                                    
+                                  } 
                                 }}
                               /> :
                               <Spinner
@@ -595,15 +545,16 @@ const Dashboard = () => {
                     className='w-full'
                     // Firebase database
                     onClick={() => {
-                      setLoading3(true)
+                      setLoading2(true)
                       updateFDB("valves", valves)
+                      updateFDB("pump2", pump_2)
                       setTimeout(() => {
-                        setLoading3(false)
+                        setLoading2(false)
                       }, 500);
 
                     }}
                   >
-                    {loading3 ? 
+                    {loading2 ? 
                       <Spinner
                         thickness='4px'
                         speed='0.65s'
