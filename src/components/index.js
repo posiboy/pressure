@@ -1,4 +1,5 @@
+import Authenticate from "./Authenticate";
 import Dashboard from "./Dashboard";
 import Header from "./Header";
 
-export { Dashboard, Header }
+export { Authenticate, Dashboard, Header }
