@@ -191,24 +191,26 @@ const Dashboard = () => {
           updateFDB("heater", false);
         }
         
-        if (infos?.water_level?.[1]) {
-          updateFDB("pump", false);
-        } 
+        // if (infos?.water_level?.[1]) {
+        //   updateFDB("pump", false);
+        // } 
+        
         // New Pumping logic
-        else if (!infos?.water_level?.[0]) {
-          updateFDB("pump", true); // Turn on Pump
+        // else if (!infos?.water_level?.[0]) {
+        // //   updateFDB("pump", true); // Turn on Pump
 
-          const pumpTimeout = setTimeout(() => {
-            updateFDB("pump", false); // Turn off after 90s
-          }, [90000])
+        // //   const pumpTimeout = setTimeout(() => {
+        // //     updateFDB("pump", false); // Turn off after 90s
+        // //   }, [90000])
 
-          // Cleanup timeout on unmount or if Firebase data changes
-          return () => clearTimeout(pumpTimeout);
-        } 
+        //   // Cleanup timeout on unmount or if Firebase data changes
+        //   // return () => clearTimeout(pumpTimeout);
+        // } 
       }
     });
 
     return () => unsubscribe(); // Cleanup Firebase listener on unmount
+  // }, [updateFDB, infos?.water_level]);
   }, [updateFDB]);
 
   // Sync `valves` state with `infos.valves` only once when `infos` arrives
@@ -258,7 +260,7 @@ const Dashboard = () => {
                 <div className='w-full'>
                   <Tooltip label={infos?.pump && "Pumping"} placement='top'>
                     <div 
-                      className={`${infos?.water_level >= 90 || infos?.pump ? "hover:bg-slate-50 bg-[#6366F1] text-white hover:text-[#6366F1]" : "bg-white text-[#6366F1] hover:bg-[#6366F1]  hover:text-white"} ease p-2 rounded-md flex items-center justify-between w-full mb-4 min-w-[250px] cursor-pointer`}
+                      className={`${infos?.water_level?.[1] || infos?.pump ? "hover:bg-slate-50 bg-[#6366F1] text-white hover:text-[#6366F1]" : "bg-white text-[#6366F1] hover:bg-[#6366F1]  hover:text-white"} ease p-2 rounded-md flex items-center justify-between w-full mb-4 min-w-[250px] cursor-pointer`}
                       >
                         <div className='flex justify-center items-center'>
                             <MdWbSunny />
@@ -286,7 +288,7 @@ const Dashboard = () => {
                 <PopoverContent>
                   <PopoverArrow />
                   <PopoverHeader className="text-base font-semibold">
-                    {infos?.water_level > 50 ? "Status" : "Confirmation"}
+                    {"Confirmation"}
                   </PopoverHeader>
                   <PopoverCloseButton />
                   <PopoverBody className='w-max'>
@@ -299,7 +301,7 @@ const Dashboard = () => {
                       </p>
                     </div>
                   </PopoverBody> 
-                  {!infos?.water_level?.[1] && 
+                  {/* {!infos?.water_level?.[1] && 
                     <PopoverFooter>
                       <Button 
                         variant='solid' 
@@ -313,8 +315,20 @@ const Dashboard = () => {
                         }}          
                       >{infos?.pump ? "OFF PUMP" : "ON PUMP"}</Button>
                     </PopoverFooter>
-                  }
-
+                  } */}
+                    <PopoverFooter>
+                      <Button 
+                        variant='solid' 
+                        background='#3B3199' 
+                        color='white' 
+                        _hover={{ bg: '#2563eb'}} 
+                        size="sm" 
+                        className='uppercase'
+                        onClick={() => {
+                          updateFDB("pump", !infos?.pump) 
+                        }}          
+                      >{infos?.pump ? "TURN OFF PUMP" : "TURN ON PUMP"}</Button>
+                    </PopoverFooter>
                 </PopoverContent>
               </Portal>
             </Popover>
@@ -329,7 +343,7 @@ const Dashboard = () => {
                     <MdWbSunny />
                     <p className='ml-2 mr-4 '>Temperature</p>
                   </div>
-                  <p className='ml-2 mr-4 '>{infos?.temperature ?? "0"}°C</p>
+                  <p className='ml-2 mr-4 '>{(infos?.temperature ?? 0).toFixed(2)}°C</p>
                 </div>
               </PopoverTrigger>
               <Portal>
@@ -447,7 +461,7 @@ const Dashboard = () => {
                   <div className='flex items-center'>
                     <Switch
                       size='sm'
-                      isChecked={isSystemActive('135deg')} // Reflects the state of valves 1, 4, 5
+                      isChecked={isSystemActive('135deg')}
                       onChange={(e) => handleSystemToggle('135deg', e.target.checked)}
                     />
                     <p className='ml-3'>135 Deg System</p>
@@ -457,41 +471,11 @@ const Dashboard = () => {
                   <div className='flex items-center'>
                     <Switch
                       size='sm'
-                      isChecked={isSystemActive('180deg')} // Reflects the state of valves 1, 6, 7
+                      isChecked={isSystemActive('180deg')}
                       onChange={(e) => handleSystemToggle('180deg', e.target.checked)}
                     />
                     <p className='ml-3'>180 Deg System</p>
                   </div>
-            
-                  {/* Panel Sprinkler */}
-                  {/* <div className='flex items-center'>
-                    <Switch
-                      size='sm'
-                      isChecked={isSystemActive('panelSprinkler')} // Reflects the state of valves 1, 6, 7
-                      onChange={(e) => handleSystemToggle('panelSprinkler', e.target.checked)}
-                    />
-                    <p className='ml-3'>Panel Sprinkler</p>
-                  </div> */}
-
-                  {/* Cold Water */}
-                  {/* <div className='flex items-center'>
-                    <Switch
-                      size='sm'
-                      isChecked={isSystemActive('coldWater')} // Reflects the state of valve 9
-                      onChange={(e) => handleSystemToggle('coldWater', e.target.checked)}
-                    />
-                    <p className='ml-3'>Cold Water</p>
-                  </div> */}
-
-                  {/* Pumps */}
-                  {/* <div className='flex items-center'>
-                    <Switch
-                      size='sm'
-                      isChecked={isSystemActive('180deg')} // Reflects the state of valves 1, 6, 7
-                      onChange={(e) => handleSystemToggle('180deg', e.target.checked)}
-                    />
-                    <p className='ml-3'>Pumps</p>
-                  </div> */}
                 </Stack>
                 </div>
  
@@ -564,8 +548,8 @@ const Dashboard = () => {
                                   const newValves = [...valves];
                                   newValves[valveIndex] = e.target.checked;
                                   setValves(newValves);
-                                  if (valveIndex == 0) {
-                                    setPump_2(e.target.checked)                                    
+                                  if (valveIndex === 0) {
+                                    setPump_2(e.target.checked)                            
                                   } 
                                 }}
                               /> :
